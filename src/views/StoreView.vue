@@ -127,6 +127,7 @@ h1 {
     }
     input,
     select {
+      width: 100%;
       font-size: 16px;
       padding: 10px;
       flex: 4;

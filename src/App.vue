@@ -10,8 +10,11 @@ import { RouterView } from 'vue-router';
 
 <style scoped lang="scss">
 main {
-  width: 800px;
+  max-width: 800px;
   margin: 0 auto;
   text-align: center;
+  @media (max-width: 900px) {
+    padding: 0 20px;
+  }
 }
 </style>
