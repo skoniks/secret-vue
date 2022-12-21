@@ -11,7 +11,7 @@ const router = createRouter({
     {
       path: '/secret/:id',
       name: 'secret',
-      component: () => import('../views/SecretView.vue'),
+      component: () => import('../views/OpenView.vue'),
     },
   ],
 });

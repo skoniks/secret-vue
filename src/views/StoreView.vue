@@ -1,7 +1,6 @@
 <script setup lang="ts">
+import { http } from '@/plugins/http';
 import { computed, ref } from 'vue';
-
-const baseUrl = import.meta.env.VITE_API_URL;
 
 const content = ref('');
 const passphrase = ref('');
@@ -11,19 +10,19 @@ const share = ref<HTMLInputElement>();
 const chars = computed(() => 1000000 - content.value.length);
 
 async function store() {
-  try {
-    const data = await fetch(baseUrl + '/api', {
-      body: JSON.stringify({
-        content: content.value,
-        passphrase: passphrase.value,
-        ttl: ttl.value,
-      }),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'PUT',
-    }).then((response) => response.json());
+  const data = await http('/api', {
+    body: JSON.stringify({
+      content: content.value,
+      passphrase: passphrase.value,
+      ttl: ttl.value,
+    }),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'PUT',
+  });
+  if (data.id) {
     shareUrl.value = location.origin + '/secret/' + data.id;
     setTimeout(() => select(), 50);
-  } catch (error) {
+  } else {
     alert('Ошибка создания тайны');
   }
 }
@@ -34,7 +33,7 @@ function select() {
 </script>
 
 <template>
-  <div class="shareForm" v-show="shareUrl.length">
+  <div class="shareForm" v-if="shareUrl.length">
     <h1>Поделиться этой ссылкой:</h1>
     <input
       type="text"
