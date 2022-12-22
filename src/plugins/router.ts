@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'store',
-      component: () => import('../views/StoreView.vue'),
+      component: () => import('../views/StoreView2.vue'),
     },
     {
       path: '/secret/:id',
