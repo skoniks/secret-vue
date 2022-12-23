@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ButtonComp from '@/components/ButtonComp.vue';
 import InputComp from '@/components/InputComp.vue';
+import SelectComp from '@/components/SelectComp.vue';
 import TextareaComp from '@/components/TextareaComp.vue';
 </script>
 
@@ -22,6 +23,21 @@ import TextareaComp from '@/components/TextareaComp.vue';
         placeholder="Слово или фраза, которую сложно угадать"
       />
     </div>
+    <div class="form">
+      <label for="ttl">Срок хранения:</label>
+      <SelectComp
+        :options="{
+          604800: '7 дней',
+          259200: '3 дня',
+          86400: '1 день',
+          43200: '12 часов',
+          14400: '4 часа',
+          3600: '1 час',
+          1800: '30 минут',
+          300: '5 минут',
+        }"
+      />
+    </div>
     <ButtonComp>Создать тайну</ButtonComp>
   </div>
 </template>
@@ -40,7 +56,7 @@ import TextareaComp from '@/components/TextareaComp.vue';
     label {
       font-weight: 700;
       font-size: 14px;
-      color: #1e232a;
+      color: var(--color-text);
     }
   }
 
@@ -50,7 +66,7 @@ import TextareaComp from '@/components/TextareaComp.vue';
   }
 
   textarea {
-    min-height: 150px;
+    min-height: 15vh;
   }
 }
 </style>

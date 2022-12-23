@@ -7,10 +7,10 @@
 <style scoped lang="scss">
 input {
   padding: 12px;
-  color: #1e232a;
+  color: var(--color-text);
   font-size: 12px;
   font-weight: 500;
-  background: #e0e4eb;
+  background: var(--color-background-sec);
   border-radius: 8px;
   border: none;
 

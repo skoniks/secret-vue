@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({ outline: Boolean });
+const props = defineProps<{ outline?: boolean }>();
 </script>
 
 <template>
@@ -10,7 +10,7 @@ const props = defineProps({ outline: Boolean });
 
 <style scoped lang="scss">
 .button {
-  width: 328px;
+  width: 350px;
   height: 56px;
 
   display: flex;

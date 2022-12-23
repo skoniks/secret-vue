@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #f0f2f5;
+  background-color: var(--color-background);
   animation: container 1s;
   animation-delay: 0.5s;
   animation-fill-mode: forwards;
@@ -68,10 +68,10 @@
 
 @keyframes preload {
   from {
-    box-shadow: inset 0px 0px 0px 100px #f0f2f5;
+    box-shadow: inset 0px 0px 0px 100px var(--color-background);
   }
   to {
-    box-shadow: inset 0px 0px 0px 0px #f0f2f5;
+    box-shadow: inset 0px 0px 0px 0px var(--color-background);
   }
 }
 </style>
