@@ -1,7 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+defineProps(['modelValue']);
+const emit = defineEmits(['update:modelValue']);
+function onInput(event: Event) {
+  const { value } = event.target as HTMLInputElement;
+  emit('update:modelValue', value);
+}
+</script>
 
 <template>
-  <textarea></textarea>
+  <textarea :value="modelValue" @input="onInput"></textarea>
 </template>
 
 <style scoped lang="scss">

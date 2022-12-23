@@ -1,11 +1,16 @@
 <script setup lang="ts">
-const props = defineProps<{ options: Record<string, string> }>();
+defineProps(['modelValue', 'options']);
+const emit = defineEmits(['update:modelValue']);
+function onChange(e: Event) {
+  const { value } = e.target as HTMLSelectElement;
+  emit('update:modelValue', value);
+}
 </script>
 
 <template>
-  <select>
+  <select :value="modelValue" @change="onChange">
     <option
-      v-for="(value, key, index) in props.options"
+      v-for="([key, value], _, index) in options"
       :key="index"
       :value="key"
     >
