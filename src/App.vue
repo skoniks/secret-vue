@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
+import AlertComp from './components/AlertComp.vue';
 import FooterComp from './components/FooterComp.vue';
 import HeaderComp from './components/HeaderComp.vue';
 import PreloadComp from './components/PreloadComp.vue';
@@ -7,6 +8,9 @@ import PreloadComp from './components/PreloadComp.vue';
 
 <template>
   <PreloadComp />
+
+  <AlertComp />
+
   <main>
     <HeaderComp />
     <RouterView />
@@ -41,5 +45,22 @@ main {
     max-width: 850px;
     padding: 0 25px;
   }
+}
+
+// Transitions
+.fade-move,
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scaleY(0.01) translate(-30px, 0);
+}
+
+.fade-leave-active {
+  position: absolute;
 }
 </style>

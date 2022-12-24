@@ -1,11 +1,11 @@
 <template>
-  <div class="container">
-    <div class="preload"></div>
+  <div class="preload">
+    <div class="logo"></div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.container {
+.preload {
   top: 0;
   left: 0;
   width: 100%;
@@ -22,7 +22,7 @@
   animation-delay: 0.5s;
   animation-fill-mode: forwards;
 
-  .preload {
+  .logo {
     width: 200px;
     height: 200px;
     position: relative;
