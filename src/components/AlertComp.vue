@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useAlertStore } from '@/stores/alert';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const alertStore = useAlertStore();
+const position = computed(() =>
+  alertStore.alerts.length <= 1 ? 'initial' : undefined,
+);
 const alertsBlock = ref<HTMLElement>();
 
 onMounted(() => {
@@ -27,6 +30,7 @@ function alertMouseUp() {
         class="item"
         :key="data.id"
         :class="data.type"
+        :style="{ position }"
         @click="alertStore.del(data.id)"
       >
         <div class="icon"></div>
