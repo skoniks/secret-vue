@@ -10,8 +10,8 @@ const props = defineProps<{ outline?: boolean }>();
 
 <style scoped lang="scss">
 .button {
-  width: 350px;
-  height: 56px;
+  width: 20em;
+  padding: 0.8em;
 
   display: flex;
   align-items: center;
@@ -23,7 +23,7 @@ const props = defineProps<{ outline?: boolean }>();
   border-radius: 6px;
 
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
   user-select: none;
   cursor: pointer;
 
@@ -33,8 +33,8 @@ const props = defineProps<{ outline?: boolean }>();
     height: 100%;
     position: absolute;
 
-    -webkit-mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
-    mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
+    -webkit-mask: url(../assets/secret.svg) no-repeat 100% 100%;
+    mask: url(../assets/secret.svg) no-repeat 100% 100%;
     -webkit-mask-position: center;
     mask-position: center;
     -webkit-mask-size: 110px;
@@ -63,9 +63,9 @@ const props = defineProps<{ outline?: boolean }>();
   > span {
     color: #fff;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 1em;
     position: relative;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease;
   }
 
   &.outline {

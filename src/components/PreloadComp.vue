@@ -34,8 +34,8 @@
       display: block;
 
       background-color: #2688eb;
-      -webkit-mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
-      mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
+      -webkit-mask: url(../assets/secret.svg) no-repeat 100% 100%;
+      mask: url(../assets/secret.svg) no-repeat 100% 100%;
       -webkit-mask-position: center;
       mask-position: center;
       -webkit-mask-size: 130px;

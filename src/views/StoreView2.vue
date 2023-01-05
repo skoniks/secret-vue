@@ -3,16 +3,43 @@ import ButtonComp from '@/components/ButtonComp.vue';
 import InputComp from '@/components/InputComp.vue';
 import SelectComp from '@/components/SelectComp.vue';
 import TextareaComp from '@/components/TextareaComp.vue';
+import { http } from '@/plugins/http';
 import { useAlertStore } from '@/stores/alert';
 import { computed, reactive } from 'vue';
 
 const alertStore = useAlertStore();
 const secret = reactive({ content: '', passphrase: '', ttl: '604800' });
+const result = reactive({ id: '', url: '', expire: 0 });
 const chars = computed(() => 1000000 - secret.content.length);
+
+async function store() {
+  try {
+    const data = await http('/api', {
+      body: JSON.stringify(secret),
+      headers: { 'Content-Type': 'application/json' },
+      method: 'PUT',
+    });
+    if (!data.id) throw new Error();
+    result.id = data.id;
+    result.expire = data.expire;
+    result.url = location.origin + '/' + data.id;
+    alertStore.add('Тайна создана', 'success');
+  } catch (error) {
+    alertStore.add('Ошибка создания тайны', 'error');
+  }
+}
+
+function clear() {
+  result.id = '';
+  result.url = '';
+  result.expire = 0;
+  secret.content = '';
+  secret.passphrase = '';
+}
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" v-if="!result.id">
     <div class="form">
       <label for="content">Тайное сообщение:</label>
       <TextareaComp
@@ -48,9 +75,22 @@ const chars = computed(() => 1000000 - secret.content.length);
         ]"
       />
     </div>
-    <ButtonComp @click="alertStore.add(new Date().toLocaleString())"
-      >Создать тайну</ButtonComp
-    >
+    <ButtonComp @click="store">Создать тайну</ButtonComp>
+  </div>
+  <div class="container" v-else>
+    <div class="form">
+      <label for="url">Ссылка:</label>
+      <InputComp id="url" v-model="result.url" readonly />
+    </div>
+    <div class="form" v-if="secret.passphrase.length">
+      <label for="passphrase">Фраза-пропуск:</label>
+      <InputComp id="passphrase" v-model="secret.passphrase" readonly />
+    </div>
+    <p>
+      <span>Тайна истекает:</span>
+      {{ new Date(result.expire).toLocaleString() }}
+    </p>
+    <ButtonComp @click="clear" outline>Новая тайна</ButtonComp>
   </div>
 </template>
 
@@ -69,7 +109,7 @@ const chars = computed(() => 1000000 - secret.content.length);
     label {
       color: var(--color-text);
       font-weight: 700;
-      font-size: 14px;
+      font-size: 0.8em;
 
       &.chars {
         position: absolute;
@@ -78,7 +118,7 @@ const chars = computed(() => 1000000 - secret.content.length);
 
         color: var(--color-text-sec);
         font-weight: 500;
-        font-size: 12px;
+        font-size: 0.8em;
       }
     }
   }
@@ -90,6 +130,22 @@ const chars = computed(() => 1000000 - secret.content.length);
 
   textarea {
     min-height: 15vh;
+  }
+
+  p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
+
+    color: var(--color-text-sec);
+    font-weight: 700;
+    font-size: 0.8em;
+
+    span {
+      color: var(--color-text);
+    }
   }
 }
 </style>

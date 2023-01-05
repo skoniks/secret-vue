@@ -41,16 +41,12 @@ header {
       mask: url(../assets/moon.svg) no-repeat 100% 100%;
       -webkit-mask-position: center;
       mask-position: center;
-      -webkit-mask-size: 28px;
-      mask-size: 28px;
 
       &.dark {
         -webkit-mask: url(../assets/sunset.svg) no-repeat 100% 100%;
         mask: url(../assets/sunset.svg) no-repeat 100% 100%;
         -webkit-mask-position: center;
         mask-position: center;
-        -webkit-mask-size: 28px;
-        mask-size: 28px;
       }
     }
   }
@@ -63,21 +59,19 @@ header {
 
     h1 {
       color: var(--color-text);
-      font-size: 24px;
+      font-size: 1.5em;
       font-weight: 700;
     }
 
     .icon {
-      width: 32px;
-      height: 32px;
+      width: 2em;
+      height: 2em;
 
       background-color: var(--color-text);
-      -webkit-mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
-      mask: url(../assets/user-secret.svg) no-repeat 100% 100%;
+      -webkit-mask: url(../assets/secret.svg) no-repeat 100% 100%;
+      mask: url(../assets/secret.svg) no-repeat 100% 100%;
       -webkit-mask-position: center;
       mask-position: center;
-      -webkit-mask-size: 28px;
-      mask-size: 28px;
     }
   }
 }

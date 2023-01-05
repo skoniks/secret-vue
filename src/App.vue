@@ -8,9 +8,7 @@ import PreloadComp from './components/PreloadComp.vue';
 
 <template>
   <PreloadComp />
-
   <AlertComp />
-
   <main>
     <HeaderComp />
     <RouterView />

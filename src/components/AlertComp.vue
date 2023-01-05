@@ -71,25 +71,25 @@ function alertMouseUp() {
     flex-direction: row;
     align-items: center;
     width: fit-content;
-    padding: 12px 16px;
+    padding: 0.5em;
     gap: 12px;
 
     backdrop-filter: blur(10px);
     border-radius: 6px;
 
     .icon {
-      width: 24px;
-      height: 24px;
+      width: 1.5em;
+      height: 1.5em;
       min-width: 24px;
     }
 
     span {
       font-weight: 700;
-      font-size: 14px;
+      font-size: 0.8em;
     }
 
     &.success {
-      background: rgba(39, 174, 96, 0.1);
+      background-color: rgba(39, 174, 96, 0.1);
 
       .icon {
         background-color: #27ae60;
@@ -97,8 +97,6 @@ function alertMouseUp() {
         mask: url(../assets/check.svg) no-repeat 100% 100%;
         -webkit-mask-position: center;
         mask-position: center;
-        -webkit-mask-size: 24px;
-        mask-size: 24px;
       }
 
       span {
@@ -107,7 +105,7 @@ function alertMouseUp() {
     }
 
     &.error {
-      background: rgba(235, 87, 87, 0.1);
+      background-color: rgba(235, 87, 87, 0.1);
 
       .icon {
         background-color: #eb5757;
@@ -115,8 +113,6 @@ function alertMouseUp() {
         mask: url(../assets/warn.svg) no-repeat 100% 100%;
         -webkit-mask-position: center;
         mask-position: center;
-        -webkit-mask-size: 24px;
-        mask-size: 24px;
       }
 
       span {
