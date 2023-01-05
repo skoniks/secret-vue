@@ -17,6 +17,8 @@
   align-items: center;
   justify-content: center;
 
+  pointer-events: none;
+
   background-color: var(--color-background);
   animation: container 1s;
   animation-delay: 0.5s;
