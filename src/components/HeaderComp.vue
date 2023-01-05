@@ -31,6 +31,7 @@ header {
     position: absolute;
     top: 20px;
     right: 20px;
+    cursor: pointer;
 
     .icon {
       width: 32px;
