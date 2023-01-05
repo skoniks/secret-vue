@@ -107,7 +107,9 @@ function copy(event: Event, message: string) {
       <span>Тайна истекает:</span>
       {{ new Date(result.expire).toLocaleString() }}
     </p>
-    <ButtonComp @click="clear" outline>Новая тайна</ButtonComp>
+    <div class="buttons">
+      <ButtonComp @click="clear" outline>Новая тайна</ButtonComp>
+    </div>
   </div>
 </template>
 
@@ -115,7 +117,7 @@ function copy(event: Event, message: string) {
 .container {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 1.2em;
 
   .form {
     display: flex;
@@ -139,10 +141,10 @@ function copy(event: Event, message: string) {
       }
     }
   }
-
-  .button {
-    max-width: 100%;
-    margin: 0 auto;
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
   }
 
   textarea {

@@ -9,9 +9,13 @@ const router = createRouter({
       component: () => import('../views/StoreView2.vue'),
     },
     {
-      path: '/secret/:id',
+      path: '/:id',
       name: 'secret',
-      component: () => import('../views/OpenView.vue'),
+      component: () => import('../views/OpenView2.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/',
     },
   ],
 });

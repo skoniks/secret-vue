@@ -10,7 +10,7 @@ const props = defineProps<{ outline?: boolean }>();
 
 <style scoped lang="scss">
 .button {
-  width: 20em;
+  width: 100%;
   padding: 0.8em;
 
   display: flex;
@@ -23,7 +23,8 @@ const props = defineProps<{ outline?: boolean }>();
   border-radius: 6px;
 
   overflow: hidden;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
   user-select: none;
   cursor: pointer;
 
