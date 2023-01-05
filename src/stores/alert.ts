@@ -14,7 +14,7 @@ export const useAlertStore = defineStore('alert', () => {
   function add(msg: string, type = 'success') {
     const id = lastId.value++;
     alerts.unshift({ id, msg, type });
-    setTimeout(() => del(id), 500000);
+    setTimeout(() => del(id), 5000);
   }
 
   function del(alertId: number) {

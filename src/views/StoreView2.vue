@@ -36,6 +36,13 @@ function clear() {
   secret.content = '';
   secret.passphrase = '';
 }
+
+function copy(event: Event, message: string) {
+  (event.target as HTMLInputElement).select();
+  const { value } = event.target as HTMLInputElement;
+  navigator.clipboard.writeText(value);
+  alertStore.add(message, 'success');
+}
 </script>
 
 <template>
@@ -80,11 +87,21 @@ function clear() {
   <div class="container" v-else>
     <div class="form">
       <label for="url">Ссылка:</label>
-      <InputComp id="url" v-model="result.url" readonly />
+      <InputComp
+        id="url"
+        v-model="result.url"
+        @click="(e: Event) => copy(e, 'Ссылка скопирована')"
+        readonly
+      />
     </div>
     <div class="form" v-if="secret.passphrase.length">
       <label for="passphrase">Фраза-пропуск:</label>
-      <InputComp id="passphrase" v-model="secret.passphrase" readonly />
+      <InputComp
+        id="passphrase"
+        v-model="secret.passphrase"
+        @click="(e: Event) => copy(e, 'Фраза-пропуск скопирована')"
+        readonly
+      />
     </div>
     <p>
       <span>Тайна истекает:</span>

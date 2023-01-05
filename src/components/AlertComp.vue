@@ -72,6 +72,7 @@ function alertMouseUp() {
     align-items: center;
     width: fit-content;
     padding: 0.5em;
+    padding-right: 1em;
     gap: 12px;
 
     backdrop-filter: blur(10px);
