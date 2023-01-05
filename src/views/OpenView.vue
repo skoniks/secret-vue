@@ -1,24 +1,30 @@
 <script setup lang="ts">
+import ButtonComp from '@/components/ButtonComp.vue';
+import InputComp from '@/components/InputComp.vue';
+import TextareaComp from '@/components/TextareaComp.vue';
 import { http } from '@/plugins/http';
-import { computed, onMounted, ref } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import router from '@/plugins/router';
+import { useAlertStore } from '@/stores/alert';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute();
+const alertStore = useAlertStore();
 const id = computed(() => `${route.params.id}`);
-const message = ref('Загрузка...');
-const preview = ref();
-const content = ref('');
+const result = reactive({ expire: 0, passphrase: false, content: '' });
 const passphrase = ref('');
 
 onMounted(() => index());
 
 async function index() {
-  const data = await http('/api/' + id.value);
-  if (data.expire) {
-    message.value = '';
-    preview.value = data;
-  } else {
-    message.value = 'Тайна не найдена';
+  try {
+    const data = await http('/api/' + id.value);
+    if (!data.expire) throw new Error();
+    result.expire = data.expire;
+    result.passphrase = data.passphrase;
+  } catch (error) {
+    alertStore.add('Ошибка получения тайны', 'error');
+    router.push('/');
   }
 }
 
@@ -29,73 +35,87 @@ async function open() {
     method: 'POST',
   });
   if (data.content) {
-    preview.value = undefined;
-    content.value = data.content;
+    result.content = data.content;
   } else {
-    alert('Тайна недоступна');
+    alertStore.add('Тайна недоступна');
   }
 }
 </script>
 
 <template>
-  <div class="openForm" v-if="preview">
-    <template v-if="preview.passphrase">
-      <h1>Требуется фраза-пропуск</h1>
-      <input
-        type="text"
+  <div class="container" v-if="!result.content">
+    <div class="form" v-if="result.passphrase">
+      <label for="passphrase">Требуется фраза-пропуск:</label>
+      <InputComp
+        id="passphrase"
         maxlength="255"
-        name="passphrase"
         v-model="passphrase"
         placeholder="Введите фразу-пропуск"
       />
-    </template>
-    <template v-else>
-      <h1>Нажмите для продолжения</h1>
-    </template>
-    <p>Тайна истекает: {{ new Date(preview.expire).toLocaleString() }}</p>
-    <button @click="open">Взглянуть на тайну</button>
+    </div>
+    <p>
+      <span>Тайна истекает:</span>
+      {{ new Date(result.expire).toLocaleString() }}
+    </p>
+    <div class="buttons">
+      <ButtonComp @click="open">Взглянуть на тайну</ButtonComp>
+      <ButtonComp outline @click="router.push('/')">Новая тайна</ButtonComp>
+    </div>
   </div>
-  <div class="watchForm" v-if="content">
-    <h1>Просмотр тайны</h1>
-    <textarea name="content" v-model="content" readonly></textarea>
+  <div class="container" v-else>
+    <div class="form">
+      <label for="content">Тайное сообщение:</label>
+      <TextareaComp id="content" v-model="result.content" readonly />
+    </div>
+    <div class="buttons">
+      <ButtonComp outline @click="router.push('/')">Новая тайна</ButtonComp>
+    </div>
   </div>
-  <h1 v-if="message">{{ message }}</h1>
-  <RouterLink to="/">
-    <button>Создать новую тайну</button>
-  </RouterLink>
 </template>
 
 <style scoped lang="scss">
-h1 {
-  margin: 10px 0;
-  font-weight: initial;
-}
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2em;
 
-input {
-  width: 100%;
-  font-size: 16px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
+  .form {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 12px;
 
-button {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  margin-top: 10px;
-}
+    label {
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 0.8em;
+    }
+  }
 
-textarea {
-  width: 100%;
-  min-height: 300px;
-  resize: vertical;
-  font-size: 16px;
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+  }
 
-  background: #eee;
-  border-radius: 3px;
-  padding: 10px;
-  &:focus {
-    outline: none;
+  textarea {
+    min-height: 15vh;
+  }
+
+  p {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
+
+    color: var(--color-text-sec);
+    font-weight: 700;
+    font-size: 0.8em;
+
+    span {
+      color: var(--color-text);
+    }
   }
 }
 </style>

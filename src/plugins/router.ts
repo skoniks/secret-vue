@@ -6,12 +6,12 @@ const router = createRouter({
     {
       path: '/',
       name: 'store',
-      component: () => import('../views/StoreView2.vue'),
+      component: () => import('../views/StoreView.vue'),
     },
     {
       path: '/:id',
       name: 'secret',
-      component: () => import('../views/OpenView2.vue'),
+      component: () => import('../views/OpenView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
