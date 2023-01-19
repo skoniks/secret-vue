@@ -43,6 +43,10 @@ function copy(event: Event, message: string) {
   navigator.clipboard.writeText(value);
   alertStore.add(message, 'success');
 }
+
+function copyPrev(event: Event) {
+  ((event.target as HTMLInputElement).previousSibling as HTMLElement).click();
+}
 </script>
 
 <template>
@@ -93,6 +97,7 @@ function copy(event: Event, message: string) {
         @click="(e: Event) => copy(e, 'Ссылка скопирована')"
         readonly
       />
+      <div class="copy" @click="copyPrev"></div>
     </div>
     <div class="form" v-if="secret.passphrase.length">
       <label for="passphrase">Фраза-пропуск:</label>
@@ -102,6 +107,7 @@ function copy(event: Event, message: string) {
         @click="(e: Event) => copy(e, 'Фраза-пропуск скопирована')"
         readonly
       />
+      <div class="copy" @click="copyPrev"></div>
     </div>
     <p>
       <span>Тайна истекает:</span>
@@ -139,6 +145,25 @@ function copy(event: Event, message: string) {
         font-weight: 500;
         font-size: 0.8em;
       }
+    }
+
+    input {
+      padding-right: 3em;
+    }
+
+    .copy {
+      width: 1.2em;
+      height: 1.2em;
+      position: absolute;
+      bottom: 0.6em;
+      right: 0.6em;
+      cursor: pointer;
+
+      background-color: var(--color-text);
+      -webkit-mask: url(../assets/copy.svg) no-repeat 100% 100%;
+      mask: url(../assets/copy.svg) no-repeat 100% 100%;
+      -webkit-mask-position: center;
+      mask-position: center;
     }
   }
   .buttons {
