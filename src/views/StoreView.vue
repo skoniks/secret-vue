@@ -244,13 +244,14 @@ function onFile() {
     }
 
     .file {
-      width: 1.5em;
+      width: 1.2em;
       height: 1.5em;
       position: absolute;
-      top: calc(50% + 5px);
-      left: calc(50% - 1em);
-      transition: opacity 0.2s ease;
       cursor: pointer;
+      bottom: 0.6em;
+      left: 0.6em;
+
+      transition: opacity 0.2s ease;
       opacity: 0.5;
 
       background-color: var(--color-text-sec);
