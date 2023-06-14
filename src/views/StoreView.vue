@@ -8,24 +8,31 @@ import { useAlertStore } from '@/stores/alert';
 import { computed, reactive } from 'vue';
 
 const alertStore = useAlertStore();
-const secret = reactive({ content: '', passphrase: '', ttl: '604800' });
+const secret = reactive({
+  content: '',
+  type: 'text',
+  passphrase: '',
+  short: 'true',
+  ttl: '604800',
+});
 const result = reactive({ id: '', url: '', expire: 0 });
 const chars = computed(() => 1000000 - secret.content.length);
+const expire = computed(() => new Date(result.expire).toLocaleString());
 
 async function store() {
-  try {
-    const data = await http('/api', {
-      body: JSON.stringify(secret),
-      headers: { 'Content-Type': 'application/json' },
-      method: 'PUT',
-    });
-    if (!data.id) throw new Error();
-    result.id = data.id;
-    result.expire = data.expire;
-    result.url = location.origin + '/' + data.id;
+  const data = await http('/api', {
+    body: JSON.stringify(secret),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
+  if (data.statusCode !== 200) {
+    const { message = 'Ошибка создания тайны' } = data;
+    alertStore.add(message, 'error');
+  } else {
+    result.id = data.result.id;
+    result.expire = data.result.expire;
+    result.url = location.origin + '/' + data.result.id;
     alertStore.add('Тайна создана', 'success');
-  } catch (error) {
-    alertStore.add('Ошибка создания тайны', 'error');
   }
 }
 
@@ -70,21 +77,33 @@ function copyPrev(event: Event) {
         placeholder="Слово или фраза, которую сложно угадать"
       />
     </div>
-    <div class="form">
-      <label for="ttl">Срок хранения:</label>
-      <SelectComp
-        v-model="secret.ttl"
-        :options="[
-          [604800, '7 дней'],
-          [259200, '3 дня'],
-          [86400, '1 день'],
-          [43200, '12 часов'],
-          [14400, '4 часа'],
-          [3600, '1 час'],
-          [1800, '30 минут'],
-          [300, '5 минут'],
-        ]"
-      />
+    <div class="group">
+      <div class="form">
+        <label>Срок хранения:</label>
+        <SelectComp
+          v-model="secret.ttl"
+          :options="[
+            [604800, '7 дней'],
+            [259200, '3 дня'],
+            [86400, '1 день'],
+            [43200, '12 часов'],
+            [14400, '4 часа'],
+            [3600, '1 час'],
+            [1800, '30 минут'],
+            [300, '5 минут'],
+          ]"
+        />
+      </div>
+      <div class="form">
+        <label>Тип ссылки:</label>
+        <SelectComp
+          v-model="secret.short"
+          :options="[
+            ['true', 'Короткая'],
+            ['', 'Длинная'],
+          ]"
+        />
+      </div>
     </div>
     <ButtonComp @click="store">Создать тайну</ButtonComp>
   </div>
@@ -109,10 +128,10 @@ function copyPrev(event: Event) {
       />
       <div class="copy" @click="copyPrev"></div>
     </div>
-    <p>
-      <span>Тайна истекает:</span>
-      {{ new Date(result.expire).toLocaleString() }}
-    </p>
+    <div class="form">
+      <label for="expire">Тайна истекает:</label>
+      <InputComp id="expire" v-model="expire" readonly />
+    </div>
     <div class="buttons">
       <ButtonComp @click="clear" outline>Новая тайна</ButtonComp>
     </div>
@@ -166,6 +185,16 @@ function copyPrev(event: Event) {
       mask-position: center;
     }
   }
+
+  .group {
+    display: flex;
+    gap: 1em;
+
+    > .form {
+      width: 100%;
+    }
+  }
+
   .buttons {
     display: flex;
     flex-direction: column;

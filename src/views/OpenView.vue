@@ -12,19 +12,20 @@ const route = useRoute();
 const alertStore = useAlertStore();
 const id = computed(() => `${route.params.id}`);
 const result = reactive({ expire: 0, passphrase: false, content: '' });
+const expire = computed(() => new Date(result.expire).toLocaleString());
 const passphrase = ref('');
 
 onMounted(() => index());
 
 async function index() {
-  try {
-    const data = await http('/api/' + id.value);
-    if (!data.expire) throw new Error();
-    result.expire = data.expire;
-    result.passphrase = data.passphrase;
-  } catch (error) {
-    alertStore.add('Ошибка получения тайны', 'error');
+  const data = await http('/api/' + id.value);
+  if (data.statusCode !== 200) {
+    const { message = 'Ошибка получения тайны' } = data;
+    alertStore.add(message, 'error');
     router.push('/');
+  } else {
+    result.expire = data.result.expire;
+    result.passphrase = data.result.passphrase;
   }
 }
 
@@ -32,12 +33,13 @@ async function open() {
   const data = await http('/api/' + id.value, {
     body: JSON.stringify({ passphrase: passphrase.value }),
     headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
+    method: 'PATCH',
   });
-  if (data.content) {
-    result.content = data.content;
+  if (data.statusCode !== 200) {
+    const { message = 'Ошибка получения тайны' } = data;
+    alertStore.add(message, 'error');
   } else {
-    alertStore.add('Тайна недоступна');
+    result.content = data.result.content;
   }
 }
 </script>
@@ -53,10 +55,10 @@ async function open() {
         placeholder="Введите фразу-пропуск"
       />
     </div>
-    <p>
-      <span>Тайна истекает:</span>
-      {{ new Date(result.expire).toLocaleString() }}
-    </p>
+    <div class="form">
+      <label for="expire">Тайна истекает:</label>
+      <InputComp id="expire" v-model="expire" readonly />
+    </div>
     <div class="buttons">
       <ButtonComp @click="open">Взглянуть на тайну</ButtonComp>
       <ButtonComp outline @click="router.push('/')">Новая тайна</ButtonComp>
