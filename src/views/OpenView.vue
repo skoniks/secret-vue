@@ -12,7 +12,12 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const alertStore = useAlertStore();
 const id = computed(() => `${route.params.id}`);
-const result = reactive({ expire: 0, passphrase: false, content: '' });
+const result = reactive({
+  expire: 0,
+  passphrase: false,
+  content: '',
+  image: false,
+});
 const expire = computed(() => new Date(result.expire).toLocaleString());
 const passphrase = ref('');
 
@@ -41,7 +46,10 @@ async function open() {
   }
   if (data.result.type == 'text') {
     result.content = data.result.content;
-  } else if (data.result.type == 'file') {
+  } else if (data.result.type == 'image') {
+    result.content = data.result.content;
+    result.image = true;
+  } else {
     fileFromBase64(data.result.content, data.result.filename);
     return router.push('/');
   }
@@ -71,7 +79,13 @@ async function open() {
   <div class="container" v-else>
     <div class="form">
       <label for="content">Тайное сообщение:</label>
-      <TextareaComp id="content" v-model="result.content" readonly />
+      <TextareaComp
+        v-if="!result.image"
+        id="content"
+        v-model="result.content"
+        readonly
+      />
+      <img v-else :src="result.content" />
     </div>
     <div class="buttons">
       <ButtonComp outline @click="router.push('/')">Новая тайна</ButtonComp>
@@ -122,6 +136,12 @@ async function open() {
     span {
       color: var(--color-text);
     }
+  }
+
+  img {
+    padding: 0.8em;
+    background-color: var(--color-background-sec);
+    border-radius: 8px;
   }
 }
 </style>

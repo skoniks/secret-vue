@@ -6,7 +6,7 @@ import TextareaComp from '@/components/TextareaComp.vue';
 import { fileToBase64 } from '@/plugins/file';
 import { http } from '@/plugins/http';
 import { useAlertStore } from '@/stores/alert';
-import { computed, reactive } from 'vue';
+import { computed, reactive, ref } from 'vue';
 
 const alertStore = useAlertStore();
 const secret = reactive({
@@ -18,11 +18,13 @@ const secret = reactive({
   short: 'true',
   ttl: '604800',
 });
+const input = ref<HTMLInputElement>();
 const result = reactive({ id: '', url: '', expire: 0 });
 const chars = computed(() => 1000000 - secret.content.length);
 const expire = computed(() => new Date(result.expire).toLocaleString());
 
 async function store() {
+  alertStore.add('Создание тайны...', 'success');
   const data = await http('/api', {
     body: JSON.stringify(secret),
     headers: { 'Content-Type': 'application/json' },
@@ -68,33 +70,53 @@ function copyPrev(event: Event) {
   ((event.target as HTMLInputElement).previousSibling as HTMLElement).click();
 }
 
-async function onDrop(event: DragEvent) {
-  if (!event.dataTransfer?.files) return;
-  const file = event.dataTransfer.files[0];
+async function handleFile(file: File) {
   const base64 = await fileToBase64(file);
   if (base64.length > 1000000) {
     const message = 'Недопустимый размер файла';
     return alertStore.add(message, 'error');
   }
-  secret.type = 'file';
+  secret.type = file.type.startsWith('image') ? 'image' : 'file';
   secret.mime = file.type;
   secret.filename = file.name;
   secret.content = base64;
+}
+
+function onDrop(event: DragEvent) {
+  if (!event.dataTransfer?.files) return;
+  const [file] = event.dataTransfer.files;
+  if (file) event.preventDefault(), handleFile(file);
+}
+
+function onPaste(event: ClipboardEvent) {
+  if (!event.clipboardData?.files) return;
+  const [file] = event.clipboardData.files;
+  if (file) event.preventDefault(), handleFile(file);
+}
+
+function onFile() {
+  if (!input.value?.files) return;
+  const [file] = input.value.files;
+  if (file) handleFile(file);
 }
 </script>
 
 <template>
   <div class="container" v-if="!result.id">
-    <div class="form" @drop.prevent="onDrop">
+    <div class="form">
       <label for="content">Тайное сообщение:</label>
       <TextareaComp
         id="content"
         maxlength="1000000"
         v-model="secret.content"
         placeholder="Напишите сюда свое сообщение"
+        @drop="onDrop"
+        @paste="onPaste"
         @input="onInput"
       />
       <label class="chars" for="content">{{ chars }}</label>
+      <div v-if="!secret.content" class="file" @click="input?.click"></div>
+      <input ref="input" type="file" @change="onFile" />
     </div>
     <div class="form">
       <label for="passphrase">Фраза-пропуск:</label>
@@ -136,7 +158,7 @@ async function onDrop(event: DragEvent) {
     <ButtonComp @click="store">Создать тайну</ButtonComp>
   </div>
   <div class="container" v-else>
-    <div class="form">
+    <div class="form copy">
       <label for="url">Ссылка на тайну:</label>
       <InputComp
         id="url"
@@ -146,7 +168,7 @@ async function onDrop(event: DragEvent) {
       />
       <div class="copy" @click="copyPrev"></div>
     </div>
-    <div class="form" v-if="secret.passphrase.length">
+    <div class="form copy" v-if="secret.passphrase.length">
       <label for="passphrase">Фраза-пропуск:</label>
       <InputComp
         id="passphrase"
@@ -178,6 +200,10 @@ async function onDrop(event: DragEvent) {
     position: relative;
     gap: 12px;
 
+    &.copy input {
+      padding-right: 3em;
+    }
+
     label {
       color: var(--color-text);
       font-weight: 700;
@@ -191,11 +217,15 @@ async function onDrop(event: DragEvent) {
         color: var(--color-text-sec);
         font-weight: 500;
         font-size: 0.8em;
-      }
-    }
 
-    input {
-      padding-right: 3em;
+        transition: all 0.2s ease;
+
+        &:hover {
+          padding: 0.2em 0.4em;
+          background-color: var(--color-background-sec);
+          border-radius: 8px;
+        }
+      }
     }
 
     .copy {
@@ -211,6 +241,31 @@ async function onDrop(event: DragEvent) {
       mask: url(../assets/copy.svg) no-repeat 100% 100%;
       -webkit-mask-position: center;
       mask-position: center;
+    }
+
+    .file {
+      width: 1.5em;
+      height: 1.5em;
+      position: absolute;
+      top: calc(50% + 5px);
+      left: calc(50% - 1em);
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+      opacity: 0.5;
+
+      background-color: var(--color-text-sec);
+      -webkit-mask: url(../assets/file.svg) no-repeat 100% 100%;
+      mask: url(../assets/file.svg) no-repeat 100% 100%;
+      -webkit-mask-position: center;
+      mask-position: center;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    input[type='file'] {
+      display: none;
     }
   }
 
