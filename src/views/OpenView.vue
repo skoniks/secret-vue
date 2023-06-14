@@ -2,6 +2,7 @@
 import ButtonComp from '@/components/ButtonComp.vue';
 import InputComp from '@/components/InputComp.vue';
 import TextareaComp from '@/components/TextareaComp.vue';
+import { fileFromBase64 } from '@/plugins/file';
 import { http } from '@/plugins/http';
 import router from '@/plugins/router';
 import { useAlertStore } from '@/stores/alert';
@@ -22,11 +23,10 @@ async function index() {
   if (data.statusCode !== 200) {
     const { message = 'Ошибка получения тайны' } = data;
     alertStore.add(message, 'error');
-    router.push('/');
-  } else {
-    result.expire = data.result.expire;
-    result.passphrase = data.result.passphrase;
+    return router.push('/');
   }
+  result.expire = data.result.expire;
+  result.passphrase = data.result.passphrase;
 }
 
 async function open() {
@@ -37,9 +37,13 @@ async function open() {
   });
   if (data.statusCode !== 200) {
     const { message = 'Ошибка получения тайны' } = data;
-    alertStore.add(message, 'error');
-  } else {
+    return alertStore.add(message, 'error');
+  }
+  if (data.result.type == 'text') {
     result.content = data.result.content;
+  } else if (data.result.type == 'file') {
+    fileFromBase64(data.result.content, data.result.filename);
+    return router.push('/');
   }
 }
 </script>
@@ -101,7 +105,7 @@ async function open() {
   }
 
   textarea {
-    min-height: 15vh;
+    min-height: 25vh;
   }
 
   p {

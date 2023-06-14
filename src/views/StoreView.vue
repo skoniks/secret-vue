@@ -3,6 +3,7 @@ import ButtonComp from '@/components/ButtonComp.vue';
 import InputComp from '@/components/InputComp.vue';
 import SelectComp from '@/components/SelectComp.vue';
 import TextareaComp from '@/components/TextareaComp.vue';
+import { fileToBase64 } from '@/plugins/file';
 import { http } from '@/plugins/http';
 import { useAlertStore } from '@/stores/alert';
 import { computed, reactive } from 'vue';
@@ -11,6 +12,8 @@ const alertStore = useAlertStore();
 const secret = reactive({
   content: '',
   type: 'text',
+  mime: '',
+  filename: '',
   passphrase: '',
   short: 'true',
   ttl: '604800',
@@ -27,13 +30,12 @@ async function store() {
   });
   if (data.statusCode !== 200) {
     const { message = 'Ошибка создания тайны' } = data;
-    alertStore.add(message, 'error');
-  } else {
-    result.id = data.result.id;
-    result.expire = data.result.expire;
-    result.url = location.origin + '/' + data.result.id;
-    alertStore.add('Тайна создана', 'success');
+    return alertStore.add(message, 'error');
   }
+  result.id = data.result.id;
+  result.expire = data.result.expire;
+  result.url = location.origin + '/' + data.result.id;
+  alertStore.add('Тайна создана', 'success');
 }
 
 function clear() {
@@ -41,6 +43,9 @@ function clear() {
   result.url = '';
   result.expire = 0;
   secret.content = '';
+  secret.type = 'text';
+  secret.mime = '';
+  secret.filename = '';
   secret.passphrase = '';
 }
 
@@ -51,20 +56,43 @@ function copy(event: Event, message: string) {
   alertStore.add(message, 'success');
 }
 
+function onInput() {
+  if (secret.type != 'text') {
+    secret.type = 'text';
+    secret.mime = '';
+    secret.filename = '';
+  }
+}
+
 function copyPrev(event: Event) {
   ((event.target as HTMLInputElement).previousSibling as HTMLElement).click();
+}
+
+async function onDrop(event: DragEvent) {
+  if (!event.dataTransfer?.files) return;
+  const file = event.dataTransfer.files[0];
+  const base64 = await fileToBase64(file);
+  if (base64.length > 1000000) {
+    const message = 'Недопустимый размер файла';
+    return alertStore.add(message, 'error');
+  }
+  secret.type = 'file';
+  secret.mime = file.type;
+  secret.filename = file.name;
+  secret.content = base64;
 }
 </script>
 
 <template>
   <div class="container" v-if="!result.id">
-    <div class="form">
+    <div class="form" @drop.prevent="onDrop">
       <label for="content">Тайное сообщение:</label>
       <TextareaComp
         id="content"
         maxlength="1000000"
         v-model="secret.content"
         placeholder="Напишите сюда свое сообщение"
+        @input="onInput"
       />
       <label class="chars" for="content">{{ chars }}</label>
     </div>
@@ -109,7 +137,7 @@ function copyPrev(event: Event) {
   </div>
   <div class="container" v-else>
     <div class="form">
-      <label for="url">Ссылка:</label>
+      <label for="url">Ссылка на тайну:</label>
       <InputComp
         id="url"
         v-model="result.url"
