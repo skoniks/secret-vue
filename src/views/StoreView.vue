@@ -6,18 +6,23 @@ import TextareaComp from '@/components/TextareaComp.vue';
 import { fileToBase64 } from '@/plugins/file';
 import { http } from '@/plugins/http';
 import { useAlertStore } from '@/stores/alert';
-import { computed, reactive, ref } from 'vue';
+import { useSecretStore } from '@/stores/secret';
+import { computed, reactive, ref, watch } from 'vue';
 
 const alertStore = useAlertStore();
+const secretStore = useSecretStore();
 const secret = reactive({
   content: '',
   type: 'text',
   mime: '',
   filename: '',
   passphrase: '',
-  short: 'true',
-  ttl: '604800',
+  // short: 'true',
+  // ttl: '604800',
+  ...secretStore.config,
 });
+watch(secret, (value) => secretStore.changeConfig(value));
+
 const input = ref<HTMLInputElement>();
 const result = reactive({ id: '', url: '', expire: 0 });
 const chars = computed(() => 1000000 - secret.content.length);

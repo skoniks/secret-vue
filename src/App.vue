@@ -19,6 +19,7 @@ import PreloadComp from './components/PreloadComp.vue';
 <style lang="scss">
 #app {
   min-height: 100vh;
+  letter-spacing: 0px;
   background-color: var(--color-background);
   transition: all 0.2s ease;
 
